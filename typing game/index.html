@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="title">
+            <h1>Typing Game</h1>
+            <div class="marker"></div>
+        </div>
+        <button v-if="!isGameStart" class="start-button mb-20" @click="changeStartFlg">
+				START
+			</button>
+        <div v-else>
+            <div class="question mb-20">{{ currentQuestion }}</div>
+            <div v-if="currentQuestionCounts === questionCounts" class="clear">
+                Clear!
+            </div>
+            <div v-if="currentQuestionCounts != questionCounts" class="type-form-wrapper mb-20">
+                <input id="typeForm" v-model="typeBox" class="type-form" type="text" />
+            </div>
+
+            <div class="gauge-wrapper mb-20">
+                <div :style="styleObject" class="gauge"></div>
+            </div>
+            <div>{{ currentQuestionCounts }} / {{ questionCounts }}</div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                isGameStart: false,
+                currentQuestion: "",
+                questions: [
+                    "apple",
+                    "banana",
+                    "chocolate",
+                    "donut",
+                    "espresso",
+                ],
+                typeBox: "",
+                currentQuestionCounts: 0,
+                questionCounts: 0,
+            },
+
+            computed: {
+                styleObject: function() {
+                    width = 20 * this.currentQuestionCounts + "%";
+                    if (
+                        this.currentQuestionCounts === this.questionCounts
+                    ) {
+                        color = "#03a9f4";
+                    } else {
+                        color = "orange";
+                    }
+                    return {
+                        width: width,
+                        "background-color": color,
+                    };
+                },
+            },
+
+            methods: {
+                changeStartFlg: function() {
+                    this.isGameStart = true;
+                    this.$nextTick(function() {
+                        document.getElementById("typeForm").focus();
+                    });
+                },
+            },
+
+            mounted: function() {
+                this.currentQuestion = this.questions[0];
+                this.questionCounts = this.questions.length;
+            },
+
+            watch: {
+                typeBox: function(e) {
+                    if (e === this.currentQuestion) {
+                        this.questions.splice(0, 1);
+                        this.currentQuestion = this.questions[0];
+                        this.typeBox = "";
+                        this.currentQuestionCounts =
+                            this.currentQuestionCounts + 1;
+                    }
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>
